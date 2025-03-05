@@ -1,0 +1,27 @@
+.main {
+    padding-top: 5px;
+  }
+  
+  .submitContainer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: #007bff;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
+  .submitButton {
+    color: white;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+  
+    &:hover {
+      text-decoration: underline;
+    }
+}
