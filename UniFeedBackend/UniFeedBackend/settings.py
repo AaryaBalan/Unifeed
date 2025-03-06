@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-ktcv2m+is-%^!4(^qo4*@xlyyor(1f1u2p25i(m=+zp_jg785=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', '172.16.45.116', '172.16.45.112', 'localhost', '172.16.45.120']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', '172.16.45.116', '172.16.45.112', 'localhost', '172.16.45.120', '192.168.225.47']
+# ALLOWED_HOSTS = ['6f7a-2401-4900-67a1-57b7-9c2d-c7dd-15c4-b784.ngrok-free.app', 'localhost' ]
 
 # Application definition
 
@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'UniFeedBackend.urls'
