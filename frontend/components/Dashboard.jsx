@@ -8,7 +8,7 @@ const Dashboard = () => {
   return (
     <div>
       <Navbar/>
-      <p className='text-lg text-center mt-10'>Welcome</p>
+      {/* <p className='text-lg text-center mt-10'>Welcome </p> */}
       <Home/>
     </div>
   )

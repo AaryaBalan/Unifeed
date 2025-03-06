@@ -10,7 +10,7 @@ const Card = ({ i, question, options, type, progress, range, targetScale, onAnsw
     });
 
     const scale = useTransform(progress, range, [1, targetScale]);
-
+    
     // Local state for search input & selected tags
     const [searchInput, setSearchInput] = useState('');
     const [filteredTags, setFilteredTags] = useState(options || []);

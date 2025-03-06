@@ -6,9 +6,9 @@ const Navbar = () => {
   const { user, isSignedIn } = useUser();
 
   return (
-    <nav className="flex justify-between items-center px-6 py-4 bg-[#016730] text-white">
+    <nav className="flex justify-between items-center px-6 py-4 bg-[#ff371a] text-white">
       {/* Left Side - Logo */}
-      <h2 className="text-2xl font-bold">Hackathon</h2>
+      <h2 className="text-2xl font-semibold ">Hackathon</h2>
 
       {/* Right Side - Profile and Sign Out */}
       {isSignedIn ? (

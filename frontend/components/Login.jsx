@@ -3,7 +3,7 @@ import React from 'react';
 
 const Login = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-white to-green-200">
+    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-white to-[#ff371a]">
       <div className="bg-white rounded-lg shadow-lg flex w-3/4 max-w-4xl p-10">
         {/* Left Section */}
         <div className="w-1/2 flex flex-col justify-center">
