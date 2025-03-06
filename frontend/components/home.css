@@ -1,0 +1,20 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, black, #f87171); /* Tailwind Red-200 */
+    background-size: cover;
+}
+.container{
+    background-color: white;
+    width: 1200px;
+    height: 800px;
+    border-radius: 1em;
+    padding: 2em;
+}

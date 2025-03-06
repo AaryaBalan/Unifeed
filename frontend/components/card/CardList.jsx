@@ -5,6 +5,9 @@ import { useScroll } from 'framer-motion';
 import Card from './Card';
 import Lenis from "@studio-freight/lenis";
 import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+
+
 const tags = [
   "Technology", "Health", "Business", "Entertainment", "Science", "Education", "Sports", "Finance",
   "Art", "Music", "Fashion", "Travel", "Food", "Gaming", "Politics", "Environment",
@@ -20,10 +23,12 @@ const questions = [
   { question: "How often do you consume content?", type: "mcq", options: ["Daily", "Weekly", "Monthly", "Rarely"] },
   { question: "Which platforms do you use?", type: "mcq", options: ["YouTube", "Instagram", "Twitter", "LinkedIn"] },
   { question: "Describe your ideal content in a few words", type: "text", options: [] },
-  { question: "What kind of creators do you follow?", type: "text", options: [] }
+  { question: "Are there any specific keywords or trends you're interested in right now?", type: "text", options: [] }
 ];
 
 export default function Home() {
+    const navigate = useNavigate(); // Initialize navigation function
+
   const { user } = useUser(); // Get logged-in user
 
   const container = useRef(null);
@@ -101,6 +106,8 @@ export default function Home() {
       if (!saveResponse.ok) throw new Error("Failed to save keywords");
 
       console.log("Saved Keywords:", await saveResponse.json());
+      navigate("/home");
+
     } catch (error) {
       console.error("Error:", error);
     }

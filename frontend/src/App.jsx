@@ -5,7 +5,11 @@ import Dashboard from '../components/Dashboard'
 import Login from '../components/Login'
 import Sign from '../components/Sign'
 import HeroPage from '../components/Hero'
-
+import Nav from '../components/Nav';
+import Home from '../components/Home';
+import Demo from '../components/Demo';
+import Search from '../components/Search'
+import SearchPage from '../components/SearchPage'
 const App = () => {
   return (
     <Router>
@@ -15,6 +19,9 @@ const App = () => {
         <Route path="register" element={""} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/" element={<HeroPage />} />
+        <Route path="/home" element={<Home />} />
+        <Route path='/demo' element={<Demo />} />
+        <Route path='/search' element={<SearchPage/>} />
 
       </Routes>
     </Router>
