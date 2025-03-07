@@ -106,7 +106,7 @@ export default function Home() {
       if (!saveResponse.ok) throw new Error("Failed to save keywords");
 
       console.log("Saved Keywords:", await saveResponse.json());
-      navigate("/home");
+      navigate("/search");
 
     } catch (error) {
       console.error("Error:", error);

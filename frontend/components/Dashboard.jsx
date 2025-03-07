@@ -6,7 +6,7 @@ import { useUser } from '@clerk/clerk-react'
 const Dashboard = () => {
   const {user} = useUser();
   return (
-    <div>
+    <div className='bg-[#0b0b0e] -mt-4'>
       <Navbar/>
       {/* <p className='text-lg text-center mt-10'>Welcome </p> */}
       <Home/>

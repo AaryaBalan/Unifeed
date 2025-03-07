@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Loading from './Loading';
-
+import { useNavigate } from 'react-router-dom';
 const Search = () => {
+    const navigate = useNavigate(); // Initialize navigation function
+
     const [searchText, setSearchText] = useState('');
     const [load, setLoad] = useState(false);
 
@@ -15,6 +17,8 @@ const Search = () => {
             const response = await axios.post('http://localhost:7000/search', { searchText });
             console.log(response.data);
             setLoad(false);
+            navigate("/search")
+            window.location.reload();
         } catch (error) {
             console.error("Error sending search request:", error);
         }
