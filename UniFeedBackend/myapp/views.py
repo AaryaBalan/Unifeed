@@ -1,23 +1,29 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 import json
+import instaloader
 from keybert import KeyBERT
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserKeywordClicks
+import os
+import requests
+import ollama
+from bs4 import BeautifulSoup
 
-import nltk
 
-nltk.download('punkt')
-nltk.download('stopwords')
+# import nltk
 
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+# nltk.download('punkt')
+# nltk.download('stopwords')
 
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+# from nltk.corpus import stopwords
+# from nltk.tokenize import word_tokenize
 
-distilbert_model = 'distilbert-base-nli-mean-tokens'
-model = SentenceTransformer(distilbert_model)
+# from sentence_transformers import SentenceTransformer
+# from sklearn.metrics.pairwise import cosine_similarity
+
+# distilbert_model = 'distilbert-base-nli-mean-tokens'
+# model = SentenceTransformer(distilbert_model)
 
 # Create your views here.
 def home(request):
@@ -64,42 +70,42 @@ def extract_keywords(request):
         response["Access-Control-Allow-Origin"] = "*"
         return response
 
-# Keywords for DistilBert
-def extract_candidate_keywords(text):
-    tokens = word_tokenize(text)  # This uses the 'punkt' resource.
-    words = [word.lower() for word in tokens if word.isalpha()]
-    stop_words = set(stopwords.words('english'))
-    candidates = [word for word in words if word not in stop_words]
-    return list(set(candidates))
+# # Keywords for DistilBert // need to uncomment these 3 views.
+# def extract_candidate_keywords(text):
+#     tokens = word_tokenize(text)  # This uses the 'punkt' resource.
+#     words = [word.lower() for word in tokens if word.isalpha()]
+#     stop_words = set(stopwords.words('english'))
+#     candidates = [word for word in words if word not in stop_words]
+#     return list(set(candidates))
 
-def generate_keywords_distilbert(text, top_n=5):
-    text_embedding = model.encode([text])[0]
-    candidates = extract_candidate_keywords(text)
-    if not candidates:
-        return []
-    candidate_embeddings = model.encode(candidates)
-    similarities = cosine_similarity([text_embedding], candidate_embeddings)[0]
-    top_indices = similarities.argsort()[-top_n:][::-1]
-    keywords = [candidates[i] for i in top_indices]
-    return keywords
+# def generate_keywords_distilbert(text, top_n=5):
+#     text_embedding = model.encode([text])[0]
+#     candidates = extract_candidate_keywords(text)
+#     if not candidates:
+#         return []
+#     candidate_embeddings = model.encode(candidates)
+#     similarities = cosine_similarity([text_embedding], candidate_embeddings)[0]
+#     top_indices = similarities.argsort()[-top_n:][::-1]
+#     keywords = [candidates[i] for i in top_indices]
+#     return keywords
 
-@csrf_exempt
-def extract_keywords_db(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            description = data.get('description', '').strip()
+# @csrf_exempt
+# def extract_keywords_db(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             description = data.get('description', '').strip()
             
-            if not description:
-                return JsonResponse({'error': 'Description text is required.'}, status=400)
+#             if not description:
+#                 return JsonResponse({'error': 'Description text is required.'}, status=400)
             
-            keywords = generate_keywords_distilbert(description, top_n=5)
-            return JsonResponse({'keywords': keywords})
+#             keywords = generate_keywords_distilbert(description, top_n=5)
+#             return JsonResponse({'keywords': keywords})
         
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Only POST requests are allowed.'}, status=405)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+#     else:
+#         return JsonResponse({'error': 'Only POST requests are allowed.'}, status=405)
 
 @csrf_exempt 
 def save_user_keywords(request):
@@ -172,6 +178,7 @@ def update_keyword_count(request):
     else:
         return JsonResponse({'error': 'Only POST requests are allowed.'}, status=405)
     
+@csrf_exempt 
 def user_keyword_api(request, userid):
     print(userid)
     query_set = UserKeywordClicks.objects.filter(user_id = userid).values()
@@ -179,3 +186,72 @@ def user_keyword_api(request, userid):
     print(query_set)
     data = list(query_set)
     return JsonResponse(data, safe=False)
+
+@csrf_exempt 
+def search_instagram_by_keyword(request):
+    # if request.method == 'POST':
+        try:
+            # data = json.loads(request.body)
+            # keyword = data.get('keyword', '').strip()
+            keyword = 'nature'
+            
+            if not keyword:
+                return JsonResponse({'error': 'No keyword provided.'}, status=400)
+            
+            hashtag_str = keyword.replace(" ", "").lower()
+            
+            # Initialize Instaloader
+            loader = instaloader.Instaloader()
+            
+            insta_username = os.getenv('INSTAGRAM_USERNAME', 'adithya05.in')
+            insta_password = os.getenv('INSTAGRAM_PASSWORD', 'adithya05in')
+            
+            loader.login(insta_username, insta_password)
+            
+            # Get the hashtag object for the given keyword
+            hashtag = instaloader.Hashtag.from_name(loader.context, hashtag_str)
+            
+            posts_data = []
+            # Iterate over posts (limit to the latest 5 for example)
+            for index, post in enumerate(hashtag.get_posts()):
+                if index >= 5:
+                    break
+                posts_data.append({
+                    "caption": post.caption,
+                    "image_url": post.url,
+                    "likes": post.likes,
+                    "date": post.date.strftime("%Y-%m-%d %H:%M:%S") if post.date else None,
+                })
+            
+            return JsonResponse({"posts": posts_data})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    # else:
+    #     return JsonResponse({"error": "Only POST requests are allowed."}, status=405)
+
+@csrf_exempt 
+def ask_model(request):
+    q="what is your name?"
+    response=ollama.chat(model='llama3', messages=[{'role':'user', 'content':q}])
+    print(response['message']['content'])
+    return HttpResponse(response['message']['content'])
+
+# views.py
+@csrf_exempt  
+def ask_question(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            question = data.get('question')
+            if not question:
+                return HttpResponseBadRequest("No question provided.")
+
+        
+            response = ollama.chat(model='llama3', messages=[{'role': 'user', 'content': question}])
+            answer = response['message']['content']
+
+            return JsonResponse({'answer': answer})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return HttpResponseBadRequest("Only POST method is allowed.")
